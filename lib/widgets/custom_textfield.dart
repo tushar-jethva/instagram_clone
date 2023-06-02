@@ -30,21 +30,26 @@ class _MyCustomTextFieldState extends State<MyCustomTextField> {
             controller: widget.controller,
             obscureText: isShow,
             decoration: InputDecoration(
-                errorBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: Colors.white),
                 ),
-                focusedErrorBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: Colors.white),
                 ),
-                border: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: Colors.white),
                 ),
                 labelText: widget.text,
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: Colors.white),
                 ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: Colors.blue),
                 ),
                 suffixIcon: IconButton(
                   icon: isShow
@@ -66,20 +71,25 @@ class _MyCustomTextFieldState extends State<MyCustomTextField> {
             controller: widget.controller,
             decoration: InputDecoration(
               errorStyle: TextStyle(color: Colors.red),
-              errorBorder: const OutlineInputBorder(
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.white),
               ),
-              focusedErrorBorder: const OutlineInputBorder(
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.white),
               ),
-              border: const OutlineInputBorder(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.white),
               ),
               labelText: widget.text,
-              enabledBorder: const OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.white),
               ),
-              focusedBorder: const OutlineInputBorder(
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.blue),
               ),
             ),

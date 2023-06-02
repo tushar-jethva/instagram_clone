@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone/screens/signup_screen.dart';
+import 'package:instagram_clone/service/auth_methods.dart';
 import 'package:instagram_clone/utills/colors.dart';
 import 'package:instagram_clone/utills/constants.dart';
 import 'package:instagram_clone/widgets/custom_button.dart';
@@ -19,13 +20,28 @@ class _MyLoginScreenState extends State<MyLoginScreen> {
   final _loginKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  final AuthService authService = AuthService();
+  bool isLoad = false;
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+  }
+
+  String? res;
+  void loginUser() async {
+    setState(() {
+      isLoad = true;
+    });
+    res = await authService.login(
+        context: context,
+        email: _usernameController.text,
+        password: _passwordController.text);
+    setState(() {
+      isLoad = false;
+    });
   }
 
   @override
@@ -62,10 +78,13 @@ class _MyLoginScreenState extends State<MyLoginScreen> {
                       ),
                       const Gap(20),
                       MyCustomButton(
-                          onPressed: () {
-                            if (_loginKey.currentState!.validate()) {}
-                          },
-                          text: "Login"),
+                        onPressed: () {
+                          if (_loginKey.currentState!.validate()) {
+                            loginUser();
+                          }
+                        },
+                        widget: isLoad ? loader() : Text("Login"),
+                      ),
                     ],
                   ),
                 ),
