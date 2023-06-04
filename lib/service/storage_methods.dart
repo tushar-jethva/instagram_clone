@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class StorageServices {
   final FirebaseStorage storage = FirebaseStorage.instance;
@@ -16,6 +17,11 @@ class StorageServices {
     //this ref provides us folder structure
     //first child is main folder name another child is for subfolder in that
     Reference ref = storage.ref().child(childName).child(auth.currentUser!.uid);
+
+    if (isPost) {
+      String id = const Uuid().v1();
+      ref = ref.child(id);
+    }
 
     //now we want to add images in that folders so we do like as we do below
     UploadTask uploadTask = ref.putData(file);
