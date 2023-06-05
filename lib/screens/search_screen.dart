@@ -3,6 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/Models/user_model.dart';
 import 'package:instagram_clone/screens/favourite_screen.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
+import 'package:instagram_clone/utills/colors.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 // ignore: depend_on_referenced_packages
 
 class MySearchScreen extends StatefulWidget {
@@ -28,14 +33,21 @@ class _MySearchScreenState extends State<MySearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: mobileBackgroundColor,
           title: TextField(
             controller: _searchController,
             decoration: InputDecoration(
                 border: InputBorder.none, labelText: "Search a User"),
-            onSubmitted: (value) {
-              setState(() {
-                isShowUser = true;
-              });
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                setState(() {
+                  isShowUser = true;
+                });
+              } else {
+                setState(() {
+                  isShowUser = false;
+                });
+              }
             },
           ),
         ),
@@ -61,13 +73,12 @@ class _MySearchScreenState extends State<MySearchScreen> {
                         return InkWell(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, MyFavouriteScreen.routeName,
-                                arguments: {
-                                  'user': UserModel.fromMap(
-                                      (snapshot.data! as dynamic)
-                                          .docs[index]
-                                          .data())
-                                });
+                                context, MyProfileScreen.routeName, arguments: {
+                              'user': UserModel.fromMap(
+                                  (snapshot.data! as dynamic)
+                                      .docs[index]
+                                      .data())
+                            });
                           },
                           child: ListTile(
                             leading: CircleAvatar(
@@ -82,6 +93,35 @@ class _MySearchScreenState extends State<MySearchScreen> {
                         );
                       }));
                 }))
-            : Text("HI"));
+            : FutureBuilder(
+                future: FirebaseFirestore.instance.collection('posts').get(),
+                builder: (context,
+                    AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                        snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return StaggeredGridView.countBuilder(
+                    crossAxisCount: 3,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {},
+                        child: CachedNetworkImage(
+                          imageUrl: snapshot.data!.docs[index]['postUrl'],
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
+                    staggeredTileBuilder: (index) => StaggeredTile.count(
+                        (index % 7 == 0) ? 2 : 1, (index % 7 == 0) ? 2 : 1),
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                  );
+                },
+              ));
   }
 }
