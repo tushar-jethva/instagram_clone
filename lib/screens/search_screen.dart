@@ -75,8 +75,9 @@ class _MySearchScreenState extends State<MySearchScreen> {
                                   (snapshot.data! as dynamic).docs[index]
                                       ['url']),
                             ),
-                            title: Text((snapshot.data! as dynamic).docs[index]
-                                ['username']),
+                            title: Text((snapshot.data! as dynamic)
+                                .docs[index]
+                                .data()['username']),
                           ),
                         );
                       }));
