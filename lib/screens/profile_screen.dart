@@ -4,12 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-
+import 'package:instagram_clone/Models/post_model.dart';
 import 'package:instagram_clone/Models/user_model.dart';
+import 'package:instagram_clone/screens/followers_screen.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
+import 'package:instagram_clone/screens/view_post_screen.dart';
 import 'package:instagram_clone/service/auth_methods.dart';
+import 'package:instagram_clone/service/post_methods.dart';
 import 'package:instagram_clone/utills/colors.dart';
 import 'package:instagram_clone/widgets/profile_col.dart';
+import 'package:instagram_clone/widgets/profile_container.dart';
 
 class MyProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -28,10 +32,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user.uid)
+        .snapshots()
+        .listen(
+          (event) => getLengths(),
+        );
     getPost();
   }
 
-  int? len;
+  int len = 0;
   getPost() async {
     var snapshot = await FirebaseFirestore.instance
         .collection('posts')
@@ -40,6 +51,28 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     setState(() {
       len = snapshot.docs.length;
     });
+  }
+
+  int followersLength = 0;
+  int followingLength = 0;
+  UserModel newUser = UserModel(
+      username: '',
+      bio: '',
+      email: '',
+      url: '',
+      uid: '',
+      followers: [],
+      following: []);
+
+  getLengths() async {
+    var snap = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user.uid)
+        .get();
+    followersLength = snap.data()!['followers'].length;
+    followingLength = snap.data()!['following'].length;
+    newUser = UserModel.fromMap(snap.data() as Map<String, dynamic>);
+    setState(() {});
   }
 
   @override
@@ -70,51 +103,77 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 MyProfileColumn(
-                                  text1: len == null ? '0' : len!.toString(),
+                                  text1: len!.toString(),
                                   text2: "Posts",
                                 ),
-                                MyProfileColumn(
-                                  text1:
-                                      widget.user.followers.length.toString(),
-                                  text2: "Followers",
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, MyFollowersScreen.routeName,
+                                        arguments: {
+                                          'uid': widget.user.uid,
+                                          'isFollowers': true
+                                        });
+                                  },
+                                  child: MyProfileColumn(
+                                    text1: followersLength!.toString(),
+                                    text2: "Followers",
+                                  ),
                                 ),
-                                MyProfileColumn(
-                                  text1:
-                                      widget.user.following.length.toString(),
-                                  text2: "Following",
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, MyFollowersScreen.routeName,
+                                        arguments: {
+                                          'uid': widget.user.uid,
+                                          'isFollowers': false
+                                        });
+                                  },
+                                  child: MyProfileColumn(
+                                    text1: followingLength!.toString(),
+                                    text2: "Following",
+                                  ),
                                 ),
                               ],
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 30, vertical: 8),
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                alignment: Alignment.center,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey, width: 1),
-                                    borderRadius: BorderRadius.circular(4)),
-                                child: InkWell(
-                                  onTap: () {
-                                    AuthService().signOut(context: context);
-                                  },
-                                  child: widget.user.uid ==
-                                          FirebaseAuth.instance.currentUser!.uid
-                                      ? Text(
-                                          'Sign Out',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500),
+                              child: newUser.uid ==
+                                      FirebaseAuth.instance.currentUser!.uid
+                                  ? MyProfileContainer(
+                                      text: "Sign Out",
+                                      onTap: () async {
+                                        await AuthService()
+                                            .signOut(context: context);
+                                      },
+                                      isCurrUser: true,
+                                    )
+                                  : newUser.followers.contains(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      ? MyProfileContainer(
+                                          text: "Unfollow",
+                                          isCurrUser: false,
+                                          isFollowed: true,
+                                          onTap: () async {
+                                            await PostMethods().doUnFollow(
+                                                currentUid: FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                                uid: widget.user.uid);
+                                          },
                                         )
-                                      : widget.user.followers.contains(
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid)
-                                          ? Text('unfollow')
-                                          : Text("Follow"),
-                                ),
-                              ),
-                            )
+                                      : MyProfileContainer(
+                                          text: "Follow",
+                                          isCurrUser: false,
+                                          isFollowed: false,
+                                          onTap: () async {
+                                            await PostMethods().doFollow(
+                                                currentUid: FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                                uid: widget.user.uid);
+                                          },
+                                        ),
+                            ),
                           ],
                         ),
                       ),
@@ -134,31 +193,41 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ),
             ),
             Gap(50),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
+            FutureBuilder(
+                future: FirebaseFirestore.instance
                     .collection('posts')
                     .where('uid', isEqualTo: widget.user.uid)
-                    .snapshots(),
+                    .get(),
                 builder: (context,
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                         snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (snapshot.data == null) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
-
                   return Flexible(
                     child: GridView.builder(
                         itemCount: snapshot.data!.docs.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3),
                         itemBuilder: (context, index) {
-                          return Container(
-                            child: Image(
-                              image: CachedNetworkImageProvider(
-                                  snapshot.data!.docs[index].data()['postUrl']),
-                              fit: BoxFit.cover,
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, MyPostViewScreen.routeName,
+                                  arguments: {
+                                    "uid": snapshot.data!.docs[index]['uid'],
+                                    "initIndex": index
+                                  });
+                            },
+                            child: Container(
+                              child: Image(
+                                image: CachedNetworkImageProvider(snapshot
+                                    .data!.docs[index]
+                                    .data()['postUrl']),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           );
                         }),

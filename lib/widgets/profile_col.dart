@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class MyProfileColumn extends StatelessWidget {
   final String text1;
   final String text2;
+  
   const MyProfileColumn({
     Key? key,
     required this.text1,
