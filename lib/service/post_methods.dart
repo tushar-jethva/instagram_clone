@@ -107,4 +107,22 @@ class PostMethods {
         await firebaseFirestore.collection('users').doc(uid).get();
     return UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
   }
+
+  doFollow({required String currentUid, required String uid}) async {
+    await firebaseFirestore.collection('users').doc(uid).update({
+      'followers': FieldValue.arrayUnion([currentUid])
+    });
+    await firebaseFirestore.collection('users').doc(currentUid).update({
+      'following': FieldValue.arrayUnion([uid])
+    });
+  }
+
+  doUnFollow({required String currentUid, required String uid}) async {
+    await firebaseFirestore.collection('users').doc(uid).update({
+      'followers': FieldValue.arrayRemove([currentUid])
+    });
+    await firebaseFirestore.collection('users').doc(currentUid).update({
+      'following': FieldValue.arrayRemove([uid])
+    });
+  }
 }

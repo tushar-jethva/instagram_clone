@@ -2,9 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/Models/user_model.dart';
-import 'package:instagram_clone/screens/favourite_screen.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram_clone/screens/profile_screen.dart';
+import 'package:instagram_clone/screens/view_post_screen.dart';
 import 'package:instagram_clone/utills/colors.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
@@ -92,9 +91,11 @@ class _MySearchScreenState extends State<MySearchScreen> {
                           ),
                         );
                       }));
-                }))
-            : FutureBuilder(
-                future: FirebaseFirestore.instance.collection('posts').get(),
+                }),
+              )
+            : StreamBuilder(
+                stream:
+                    FirebaseFirestore.instance.collection('posts').snapshots(),
                 builder: (context,
                     AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
                         snapshot) {
@@ -109,7 +110,14 @@ class _MySearchScreenState extends State<MySearchScreen> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, MyPostViewScreen.routeName,
+                              arguments: {
+                                "uid": snapshot.data!.docs[index].data()['uid'],
+                                "initIndex": index,
+                              });
+                        },
                         child: CachedNetworkImage(
                           imageUrl: snapshot.data!.docs[index]['postUrl'],
                           fit: BoxFit.cover,
