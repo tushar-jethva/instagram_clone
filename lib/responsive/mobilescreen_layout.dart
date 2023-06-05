@@ -5,6 +5,7 @@ import 'package:instagram_clone/screens/home_screen.dart';
 import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/screens/search_screen.dart';
 import 'package:instagram_clone/screens/upload_screen.dart';
+import 'package:instagram_clone/service/auth_methods.dart';
 import 'package:instagram_clone/utills/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
@@ -25,19 +26,17 @@ class _MyMobileScreenLayoutState extends State<MyMobileScreenLayout> {
     });
   }
 
-  List<Widget> screens = [
-    MyHomeScreen(),
-    MySearchScreen(),
-    MyUploadScreen(),
-    Text("Heart Screen"),
-    MyProfileScreen(
-
-    )
-  ];
-
   @override
   Widget build(BuildContext context) {
     UserModel user = Provider.of<UserProvider>(context, listen: false).user;
+    List<Widget> screens = [
+      MyHomeScreen(),
+      MySearchScreen(),
+      MyUploadScreen(),
+      Text("Heart Screen"),
+      MyProfileScreen(user: user),
+    ];
+
     return Scaffold(
       body: Center(child: screens[currentIndex]),
       bottomNavigationBar: BottomNavigationBar(

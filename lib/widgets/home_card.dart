@@ -5,8 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:instagram_clone/Models/user_model.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/screens/comment_screen.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/service/auth_methods.dart';
 import 'package:instagram_clone/service/post_methods.dart';
 import 'package:instagram_clone/widgets/like_animation.dart';
@@ -34,6 +36,7 @@ class _MyHomeCardState extends State<MyHomeCard> {
     // TODO: implement initState
     super.initState();
     getAllComments();
+    getUserData();
   }
 
   int len = 0;
@@ -47,6 +50,18 @@ class _MyHomeCardState extends State<MyHomeCard> {
 
     setState(() {
       len = snapshot.docs.length;
+    });
+  }
+
+  UserModel? userdata;
+  void getUserData() async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.snap.uid)
+        .get();
+
+    setState(() {
+      userdata = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
     });
   }
 
@@ -97,12 +112,33 @@ class _MyHomeCardState extends State<MyHomeCard> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 22,
-                  foregroundImage: CachedNetworkImageProvider(widget.snap.url),
-                ),
+                userdata != null
+                    ? InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, MyProfileScreen.routeName,
+                              arguments: {'user': userdata});
+                        },
+                        child: CircleAvatar(
+                          radius: 22,
+                          foregroundImage:
+                              CachedNetworkImageProvider(widget.snap.url),
+                        ),
+                      )
+                    : CircleAvatar(
+                        radius: 22,
+                        foregroundImage:
+                            CachedNetworkImageProvider(widget.snap.url),
+                      ),
                 const Gap(15),
-                Expanded(child: Text(widget.snap.username)),
+                Expanded(
+                    child: InkWell(
+                         onTap: () {
+                          Navigator.pushNamed(
+                              context, MyProfileScreen.routeName,
+                              arguments: {'user': userdata});
+                        },
+                        child: Text(widget.snap.username))),
                 IconButton(
                     onPressed: () {
                       showDeleteDialog(context);
@@ -131,7 +167,7 @@ class _MyHomeCardState extends State<MyHomeCard> {
                       image: DecorationImage(
                           image:
                               CachedNetworkImageProvider(widget.snap.postUrl),
-                          fit: BoxFit.cover)),
+                          fit: BoxFit.contain)),
                 ),
                 AnimatedOpacity(
                   duration: Duration(milliseconds: 200),

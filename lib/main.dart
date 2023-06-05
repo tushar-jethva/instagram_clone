@@ -9,6 +9,7 @@ import 'package:instagram_clone/responsive/webscreen_layout.dart';
 import 'package:instagram_clone/routes/routes.dart';
 import 'package:instagram_clone/screens/add_post.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/utills/colors.dart';
 import 'package:instagram_clone/utills/constants.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
-        
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData.dark()
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
             return const MyLoginScreen();
           }),
         ),
-        // home: MyAddPostScreen(),
+        // home: MyProfileScreen(),
       ),
     );
   }

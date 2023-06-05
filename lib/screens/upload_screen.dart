@@ -64,9 +64,11 @@ class _MyUploadScreenState extends State<MyUploadScreen> {
                     onTap: () async {
                       image = await pickImagFromSources(ImageSource.gallery);
                       setState(() {});
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, MyAddPostScreen.routeName,
-                          arguments: {"image": image});
+                      if (image != null) {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, MyAddPostScreen.routeName,
+                            arguments: {"image": image});
+                      }
                     },
                     child: const SizedBox(
                       width: double.infinity,

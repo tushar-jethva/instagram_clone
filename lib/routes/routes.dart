@@ -6,6 +6,7 @@ import 'package:instagram_clone/screens/add_post.dart';
 import 'package:instagram_clone/screens/comment_screen.dart';
 import 'package:instagram_clone/screens/favourite_screen.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
+import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/screens/signup_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
@@ -49,6 +50,15 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       return MaterialPageRoute(
           builder: (_) {
             return  MyFavouriteScreen(user: map['user'],);
+          },
+          settings: routeSettings);
+
+      case MyProfileScreen.routeName:
+      Map<String, dynamic> map =
+          routeSettings.arguments as Map<String, dynamic>;
+      return MaterialPageRoute(
+          builder: (_) {
+            return  MyProfileScreen(user: map['user'],);
           },
           settings: routeSettings);
 
