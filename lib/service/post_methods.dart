@@ -33,7 +33,8 @@ class PostMethods {
           url: profileImage,
           postUrl: url,
           datePublished: DateTime.now(),
-          likes: []);
+          likes: [],
+          bookMark: []);
       await firebaseFirestore
           .collection("posts")
           .doc(postId)
@@ -124,5 +125,17 @@ class PostMethods {
     await firebaseFirestore.collection('users').doc(currentUid).update({
       'following': FieldValue.arrayRemove([uid])
     });
+  }
+
+  doBookMark({required String postId, required String currId}) async {
+    await firebaseFirestore.collection('posts').doc(postId).update(({
+          'bookMark': FieldValue.arrayUnion([currId]),
+        }));
+  }
+
+  doUnBookMark({required String postId, required String currId}) async {
+    await firebaseFirestore.collection('posts').doc(postId).update(({
+          'bookMark': FieldValue.arrayRemove([currId]),
+        }));
   }
 }

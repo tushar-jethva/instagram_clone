@@ -7,6 +7,7 @@ import 'package:instagram_clone/Models/user_model.dart';
 import 'package:instagram_clone/responsive/mobilescreen_layout.dart';
 import 'package:instagram_clone/responsive/responsive_screen.dart';
 import 'package:instagram_clone/responsive/webscreen_layout.dart';
+import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/service/storage_methods.dart';
 import 'package:instagram_clone/utills/constants.dart';
 
@@ -90,6 +91,8 @@ class AuthService {
   signOut({required BuildContext context}) async {
     try {
       await _auth.signOut();
+      Navigator.pushNamedAndRemoveUntil(
+          context, MyLoginScreen.routeName, (route) => false);
     } catch (e) {
       showSnackBar(context: context, data: e.toString());
     }
