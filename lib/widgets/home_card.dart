@@ -133,7 +133,7 @@ class _MyHomeCardState extends State<MyHomeCard> {
                 const Gap(15),
                 Expanded(
                     child: InkWell(
-                         onTap: () {
+                        onTap: () {
                           Navigator.pushNamed(
                               context, MyProfileScreen.routeName,
                               arguments: {'user': userdata});
@@ -230,12 +230,28 @@ class _MyHomeCardState extends State<MyHomeCard> {
                 iconSize: 25,
               ),
               Spacer(),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(FluentSystemIcons.ic_fluent_bookmark_filled),
-                color: Colors.white,
-                iconSize: 28,
-              ),
+              widget.snap.bookMark
+                      .contains(FirebaseAuth.instance.currentUser!.uid)
+                  ? IconButton(
+                      onPressed: () async {
+                        await PostMethods().doUnBookMark(
+                            postId: widget.snap.postId,
+                            currId: FirebaseAuth.instance.currentUser!.uid);
+                      },
+                      icon: Icon(FluentSystemIcons.ic_fluent_bookmark_filled),
+                      color: Colors.white,
+                      iconSize: 28,
+                    )
+                  : IconButton(
+                      onPressed: () async {
+                        await PostMethods().doBookMark(
+                            postId: widget.snap.postId,
+                            currId: FirebaseAuth.instance.currentUser!.uid);
+                      },
+                      icon: Icon(FluentSystemIcons.ic_fluent_bookmark_regular),
+                      color: Colors.white,
+                      iconSize: 28,
+                    ),
             ],
           ),
           Gap(15),

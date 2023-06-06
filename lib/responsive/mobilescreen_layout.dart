@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/Models/user_model.dart';
 import 'package:instagram_clone/providers/user_provider.dart';
+import 'package:instagram_clone/screens/favourite_screen.dart';
 import 'package:instagram_clone/screens/home_screen.dart';
 import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/screens/search_screen.dart';
@@ -33,7 +34,7 @@ class _MyMobileScreenLayoutState extends State<MyMobileScreenLayout> {
       MyHomeScreen(),
       MySearchScreen(),
       MyUploadScreen(),
-      Text("Heart Screen"),
+      MyFavouriteScreen(),
       MyProfileScreen(user: user),
     ];
 

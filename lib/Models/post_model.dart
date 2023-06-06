@@ -10,6 +10,7 @@ class PostModel {
   final String postUrl;
   final datePublished;
   final likes;
+  final List bookMark;
 
   PostModel(
       {required this.username,
@@ -19,7 +20,8 @@ class PostModel {
       required this.url,
       required this.postUrl,
       required this.datePublished,
-      required this.likes});
+      required this.likes,
+      required this.bookMark});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -30,7 +32,8 @@ class PostModel {
       'url': url,
       'postUrl': postUrl,
       'datePublished': datePublished,
-      'likes': likes
+      'likes': likes,
+      'bookMark':bookMark
     };
   }
 
@@ -43,7 +46,8 @@ class PostModel {
         url: map['url'] as String,
         postUrl: map['postUrl'] as String,
         datePublished: map['datePublished'],
-        likes: map['likes']);
+        likes: map['likes'],
+        bookMark: map['bookMark']);
   }
 
   String toJson() => json.encode(toMap());

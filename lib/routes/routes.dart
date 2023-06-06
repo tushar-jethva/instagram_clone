@@ -49,13 +49,9 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
           settings: routeSettings);
 
     case MyFavouriteScreen.routeName:
-      Map<String, dynamic> map =
-          routeSettings.arguments as Map<String, dynamic>;
       return MaterialPageRoute(
           builder: (_) {
-            return MyFavouriteScreen(
-              user: map['user'],
-            );
+            return MyFavouriteScreen();
           },
           settings: routeSettings);
 
@@ -80,13 +76,15 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
           },
           settings: routeSettings);
 
-      case MyFollowersScreen.routeName:
+    case MyFollowersScreen.routeName:
       Map<String, dynamic> map =
           routeSettings.arguments as Map<String, dynamic>;
       return MaterialPageRoute(
           builder: (_) {
             return MyFollowersScreen(
-                uid: map['uid'],isFollowers: map['isFollowers'],);
+              uid: map['uid'],
+              isFollowers: map['isFollowers'],
+            );
           },
           settings: routeSettings);
 
